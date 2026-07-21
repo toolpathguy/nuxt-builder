@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Build output
+.output/
+.nuxt/
+dist/
+
+# Dev data (persistence backend)
+.data/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
