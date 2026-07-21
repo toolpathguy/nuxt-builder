@@ -14,6 +14,18 @@ approach that works on both mouse and touch.
 
 ## Requirements
 
+0. **De-risking spike (do this first).** Before wiring the full editor, build a
+   minimal isolated proof-of-concept that demonstrates palette → nested
+   named-slot drop (a Button into a Hero's `actions` slot) using
+   `@formkit/drag-and-drop`. Prove the library can express:
+   - Cross-container drops (palette → canvas container)
+   - Nested tree drops with named-slot targets
+   - Index computation within a target
+   If the library cannot cleanly handle nested-tree drops with named-slot targets,
+   fall back to **custom pointer-event handling** for the canvas while keeping
+   `@formkit/drag-and-drop` for flat lists (palette items, layer tree reorder).
+   Document the decision in AI-MAP.md under Notes.
+
 1. **Drop targets & positioning.** A drop can land:
    - into a container node's default slot (between existing children — show an
      insertion line indicating index), or into a named slot,
@@ -65,3 +77,5 @@ positioning — flow/grid only.
 
 ## Commit
 `feat(07): drag-and-drop insert, reorder, reparent with @formkit/drag-and-drop`
+
+Work on branch `feat/07-drag-and-drop`, merge to `main` via PR per git steering.

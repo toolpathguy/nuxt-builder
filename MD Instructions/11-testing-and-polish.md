@@ -60,7 +60,7 @@ extend, don't rewrite.
 7. **README** at repo root: what the project is, how to run the editor, how the
    Page Document / registry / compiler fit together, and how to run both compile
    paths (deterministic CLI and Claude Code handoff). Link back to `/specs`.
-   Note the stack: Nuxt 4, Nuxt UI v3, Tailwind CSS v4, Pinia,
+   Note the stack: Nuxt 4, Nuxt UI v4, Tailwind CSS v4, Pinia,
    @formkit/drag-and-drop, Zod.
 
 ## Acceptance criteria
@@ -79,3 +79,5 @@ asset backend — note these in the README as future work.
 
 ## Commit
 `feat(11): undo/redo, responsive previews, a11y, templates, test pass, readme`
+
+Work on branch `feat/11-testing-and-polish`, merge to `main` via PR per git steering.

@@ -63,6 +63,9 @@ a CLI, or a server route. It only produces text.
 ## Acceptance criteria
 - `npm run typecheck` passes; the compiler module has **no** Vue/Pinia/browser
   imports.
+- **Registry import rule:** The compiler and CLI import ONLY from
+  `/registry/entries.ts` (not `/registry/index.ts`) so no `.vue` files are
+  pulled into the non-Vite runtime.
 - `compilePage(seedDocument, registry)` produces a valid `.vue` file that, when
   placed in `/app/pages`, renders the same result as the editor canvas for that
   document (verify by eye + a snapshot).
@@ -79,3 +82,5 @@ Claude Code path (Task 10). No styling extraction (components own their styles).
 
 ## Commit
 `feat(09): deterministic page-document to .vue compiler + CLI`
+
+Work on branch `feat/09-compiler`, merge to `main` via PR per git steering.

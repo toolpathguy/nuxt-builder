@@ -80,3 +80,5 @@ No UI. This is pure data + validation + store logic.
 
 ## Commit
 `feat(03): page document schema, registry validation, editor store`
+
+Work on branch `feat/03-page-document-schema`, merge to `main` via PR per git steering.

@@ -16,15 +16,17 @@ clean foundation with the folders, base types, and dev tooling in place.
      `nuxt.config.ts`.
    - Set `ssr: true` (we want real Nuxt pages as output, but the editor route
      will be client-heavy).
-   - Enable `future: { compatibilityVersion: 5 }` for forward compatibility with
-     Nuxt 5.
+   - Build on stable Nuxt 4 defaults — do NOT enable
+     `future.compatibilityVersion: 5` (it opts into Nitro v3 breaking behavior
+     that conflicts with Task 08's server routes).
 
 2. **Install and register dependencies:**
-   - `@nuxt/ui` (v3) — brings Tailwind CSS v4, Reka UI primitives, and Lucide
+   - `@nuxt/ui` (v4) — brings Tailwind CSS v4, Reka UI primitives, and Lucide
      icons. Register as a Nuxt module.
    - `@pinia/nuxt` and `pinia` — state management.
    - `vitest`, `@vue/test-utils`, `@nuxt/test-utils`, `happy-dom` — testing.
-   - `zod` — runtime validation of the Page Document and Registry entries.
+   - `zod` (pin `^4` in package.json) — runtime validation of the Page Document
+     and Registry entries.
    - `@formkit/drag-and-drop` — reserved for Task 07; install now, don't use yet.
    - Configure ESLint via `@nuxt/eslint` with the recommended flat config.
 
@@ -41,7 +43,7 @@ clean foundation with the folders, base types, and dev tooling in place.
      (use `crypto.randomUUID()`).
 
 5. **Scripts** in `package.json`: `dev`, `build`, `generate`, `lint`,
-   `typecheck` (`nuxi typecheck`), `test` (`vitest run`), `test:watch`.
+   `typecheck` (`nuxt typecheck`), `test` (`vitest run`), `test:watch`.
 
 6. **A placeholder `/app/pages/index.vue`** that links to `/editor` (route added
    in a later task) and an `/app/pages/editor.vue` stub that renders the text
@@ -50,7 +52,14 @@ clean foundation with the folders, base types, and dev tooling in place.
 7. **A single smoke test** in `/tests/smoke.test.ts` that imports `makeNodeId`
    and asserts it returns a non-empty string, to prove Vitest is wired up.
 
-8. **Theme configuration** in `app.config.ts`: set a neutral base theme using
+8. **Testing environment configuration:** Configure `vitest.config.ts` using
+   `defineVitestConfig` from `@nuxt/test-utils/e2e`. Set the Vitest environment
+   to `'nuxt'` so that component tests mounting Nuxt UI components (Tasks 05, 06)
+   can use `mountSuspended` from `@nuxt/test-utils/runtime` without failing. This
+   is required because bare `@vue/test-utils` mounting of Nuxt UI components
+   (`UInput`, `USelect`, `UModal`, etc.) will fail without the Nuxt context.
+
+9. **Theme configuration** in `app.config.ts`: set a neutral base theme using
    Nuxt UI's theming system. Configure the primary color (e.g. indigo) and
    neutral (e.g. slate). This ensures a consistent look for the editor chrome.
 
@@ -69,3 +78,5 @@ create anything owned by later tasks.
 
 ## Commit
 `feat(01): scaffold nuxt 4 + ts + pinia + nuxt ui + tooling`
+
+Work on branch `feat/01-project-setup`, merge to `main` via PR per git steering.

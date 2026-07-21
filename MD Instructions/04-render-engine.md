@@ -67,3 +67,5 @@ placeholders + refs). No persistence.
 
 ## Commit
 `feat(04): recursive render engine with editor affordances`
+
+Work on branch `feat/04-render-engine`, merge to `main` via PR per git steering.

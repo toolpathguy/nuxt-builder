@@ -1,7 +1,7 @@
 # Nuxt Visual Builder — Build Plan (START HERE)
 
-This folder contains a sequenced set of build prompts for **Claude Code**. Each
-numbered file is a self-contained task. Work through them **in order** — later
+This folder contains a sequenced set of build tasks executed via **Kiro specs**.
+Each numbered file is a self-contained task. Work through them **in order** — later
 files assume the artifacts produced by earlier ones exist.
 
 ## What we're building
@@ -27,17 +27,16 @@ Component Registry  ─┬─►  Editor canvas (live <component :is>)
 Page Document (JSON) ─────►  Compiler / Claude Code ─────►  Nuxt pages & components
 ```
 
-## How to run this with Claude Code
+## How to run this with Kiro
 
-1. Create an empty git repo and drop this whole folder in at `/specs`.
-2. Open Claude Code in the repo root.
-3. Feed it the files one at a time, in order, e.g.:
-   > "Read `specs/00-START-HERE.md` and `specs/01-project-setup.md`, then
-   > implement task 01. Stop when the acceptance criteria are met and I'll review."
-4. Review, commit, then move to the next file.
+1. The repo lives at `https://github.com/toolpathguy/nuxt-builder.git`.
+2. Each task maps to a Kiro spec. Work through them in order.
+3. Each task is implemented on a `feat/NN-*` branch and merged to `main` via PR
+   per the git steering doc.
+4. Review each PR, then move to the next spec.
 
-**Do not** paste all files at once. Each file is scoped so Claude Code can finish
-and you can verify before moving on. Commit after every task.
+**Do not** implement multiple specs at once. Each file is scoped so one spec can
+finish and you can verify before moving on.
 
 ## File order
 
@@ -59,11 +58,9 @@ and you can verify before moving on. Commit after every task.
 
 - **Stack:** Nuxt 4 (v4.5+, latest stable), Vue 3 `<script setup>`, TypeScript
   strict, Pinia for state, Vitest + Vue Test Utils for tests.
-- **UI framework:** Nuxt UI v3 (`@nuxt/ui`) for all editor chrome (inputs,
+- **UI framework:** Nuxt UI v4 (`@nuxt/ui`) for all editor chrome (inputs,
   buttons, selects, modals, color pickers, etc.). Styling via Tailwind CSS v4
   (ships with Nuxt UI). Use `app.config.ts` for theme customization.
-- **Forward compatibility:** Enable `future.compatibilityVersion: 5` in
-  `nuxt.config.ts` to prepare for Nuxt 5 migration.
 - **Layout model:** section/block **flow grid**, NOT absolute free-drag
   positioning. This keeps generated Vue clean and responsive.
 - **The editor is itself a Nuxt app.** The canvas renders the real components via
@@ -73,7 +70,8 @@ and you can verify before moving on. Commit after every task.
 - **No `any`.** Prefer discriminated unions for node types.
 - **Keep tasks isolated.** Don't refactor files owned by a later task.
 - **Commit message convention:** `feat(NN): short description` matching the task
-  number.
+  number. Work happens on a `feat/NN-*` branch merged via PR per the git steering
+  doc — never commit directly to `main`.
 
 ## Directory layout the build should converge on
 

@@ -58,7 +58,10 @@ Replace the `/app/pages/editor.vue` stub from Task 01.
 - Selecting a node anywhere highlights it everywhere.
 - Deleting via tree action or keyboard removes it from canvas and tree; root is
   protected.
-- A component test covers palette-insert and tree/canvas selection sync.
+- A component test (using `mountSuspended` from `@nuxt/test-utils/runtime` with
+  the `nuxt` Vitest environment) covers palette-insert and tree/canvas selection
+  sync. Do not weaken or skip tests to work around mounting errors — fix the
+  environment.
 
 ## Out of scope
 No auto-generated property controls (Task 06). No drag-and-drop reordering
@@ -66,3 +69,5 @@ No auto-generated property controls (Task 06). No drag-and-drop reordering
 
 ## Commit
 `feat(05): editor shell — palette, canvas, layer tree, inspector, selection sync`
+
+Work on branch `feat/05-editor-shell`, merge to `main` via PR per git steering.
