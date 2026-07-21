@@ -140,4 +140,4 @@ After completing a task:
 | Date | Decision | Context |
 |------|----------|---------|
 | — | @formkit/drag-and-drop spike required | Task 07 requires proving nested named-slot drops work before full wiring. If it can't, fall back to custom pointer-events for canvas, keep library for flat lists. |
-| — | Columns only accepts Column children | `allowedChildren: ['Column']` on Columns entry. Validated by `validateAgainstRegistry` (Task 03). Bare Column outside Columns is NOT rejected by validator — enforced by drop-target logic (Task 07) only. Task 09 compiler relies on this invariant. Column.span is a number prop (min:1, max:4). |
+| — | Columns only accepts Column children | `allowedChildren: ['Column']` on Columns entry + `allowedParents: ['Columns']` on Column entry. Both validated by `validateAgainstRegistry` (Task 03). Drop-target guard (Task 07) checks both directions. Column.span is a number prop (min:1, max:4). |

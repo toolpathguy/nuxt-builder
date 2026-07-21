@@ -39,11 +39,19 @@ approach that works on both mouse and touch.
    `defaultPropsFor(type)` and inserts it at the drop target with
    `editorStore.insertNode(parentId, node, slot, index)`. Reject (visually, e.g.
    a "no-drop" cursor) when hovering a target that can't accept that node.
+   The guard must check both directions:
+   - The target parent's `allowedChildren` (if declared) must include the
+     dragged node's type.
+   - The dragged node's `allowedParents` (if declared) must include the target
+     parent's type.
+   This enforces, for example, that a `Column` can only be dropped into
+   `Columns` and nowhere else.
 
 3. **Canvas node → canvas.** Dragging an existing node calls
    `editorStore.moveNode(id, newParentId, slot, index)`. The store already guards
    cycles and illegal parents (Task 03) — surface rejected drops in the UI rather
-   than letting them apply.
+   than letting them apply. Apply the same `allowedChildren`/`allowedParents`
+   guard as requirement 2.
 
 4. **Layer tree drag.** The `LayerTree` (Task 05) must support the same
    reorder/reparent via drag, staying in sync with the canvas. Dragging in the
