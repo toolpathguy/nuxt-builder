@@ -82,3 +82,5 @@ run manually via copy-paste into Claude Code.
 
 ## Commit
 `feat(10): claude code handoff payload, prompt template, and guide`
+
+Work on branch `feat/10-claude-code-handoff`, merge to `main` via PR per git steering.

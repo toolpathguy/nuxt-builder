@@ -24,6 +24,12 @@ none of those need to hardcode component knowledge. Read `00-START-HERE.md` and
      props: Record<string, PropSchema>;   // editable props (from shared.ts)
      slots?: string[];             // named slots that accept child nodes
      acceptsChildren: boolean;     // whether default slot takes children
+     // Restricts which node types may appear as default-slot children.
+     // Omitted = any type allowed (subject to acceptsChildren).
+     allowedChildren?: string[];
+     // Restricts which parent types this node may be dropped into.
+     // Omitted = any parent allowed (subject to parent's acceptsChildren).
+     allowedParents?: string[];
      // A compiler hint: the tag/name the compiler emits. Defaults to `type`.
      compileAs?: string;
    }
@@ -47,7 +53,8 @@ none of those need to hardcode component knowledge. Read `00-START-HERE.md` and
    | type | category | key props | slots / children |
    |------|----------|-----------|------------------|
    | `Section`  | layout  | `padding(enum sm/md/lg)`, `bg(color)`, `maxWidth(enum full/wide/narrow)` | acceptsChildren |
-   | `Columns`  | layout  | `count(number 2..4)`, `gap(enum sm/md/lg)` | acceptsChildren (each child is a column) |
+   | `Columns`  | layout  | `gap(enum sm/md/lg)` | acceptsChildren, `allowedChildren: ['Column']` |
+   | `Column`   | layout  | `span(number min:1 max:4 step:1)` | acceptsChildren, `allowedParents: ['Columns']` |
    | `Hero`     | content | `heading(string)`, `subheading(text)`, `align(enum left/center)`, `bg(color)` | slot: `actions` |
    | `Heading`  | content | `text(string)`, `level(enum h1..h4)`, `align(enum)` | none |
    | `Text`     | content | `body(text)`, `align(enum)` | none |
@@ -55,12 +62,20 @@ none of those need to hardcode component knowledge. Read `00-START-HERE.md` and
    | `Image`    | media   | `src(image)`, `alt(string)`, `rounded(boolean)` | none |
    | `Spacer`   | layout  | `size(enum sm/md/lg)` | none |
 
-4. **Runtime component map** in `/registry/index.ts`:
-   - Export `registry: Registry` (all entries merged).
-   - Export `componentMap: Record<string, Component>` mapping each `type` to its
-     imported Vue component. This is what `<component :is>` will use.
-   - Export helpers: `getEntry(type)`, `defaultPropsFor(type)` (builds a props
-     object from each `PropSchema.default`), and `entriesByCategory()`.
+4. **Registry purity split:**
+   - **`/registry/entries.ts`** — export all `RegistryEntry` data as pure data
+     objects. NO `.vue` imports allowed here. This file is safe to import from the
+     compiler (Task 09), its CLI, and server routes (Task 08).
+   - **`/registry/index.ts`** — import entries from `entries.ts`, import the Vue
+     components, and export:
+     - `registry: Registry` (re-exported from entries)
+     - `componentMap: Record<string, Component>` mapping each `type` to its
+       imported Vue component. This is what `<component :is>` will use.
+     - Helpers: `getEntry(type)`, `defaultPropsFor(type)` (builds a props
+       object from each `PropSchema.default`), and `entriesByCategory()`.
+   - **Rule:** The compiler, CLI, and server routes must ONLY import from
+     `/registry/entries.ts`. Importing `/registry/index.ts` (which pulls `.vue`
+     files) would break any non-Vite runtime (tsx CLI, Nitro server).
 
 5. **`useRegistry()` composable** in `/app/composables/useRegistry.ts` exposing
    the registry, the component map, and the helper functions to Vue land.
@@ -71,6 +86,12 @@ none of those need to hardcode component knowledge. Read `00-START-HERE.md` and
   matching `registry` entry and vice-versa; `defaultPropsFor('Hero')` returns the
   declared defaults; zod validation throws on a deliberately broken entry.
 - Each block component can be imported and mounted in isolation without errors.
+- **Purity check:** `/registry/entries.ts` has zero `.vue` imports; importing it
+  from a plain Node/tsx script does not throw.
+- **Columns rule:** `Columns` declares `allowedChildren: ['Column']` and `Column`
+  declares `allowedParents: ['Columns']`. Both constraints are validated by
+  `validateAgainstRegistry` (Task 03) and enforced by drop-target guards
+  (Task 07). Tasks 07 and 09 rely on these invariants.
 
 ## Out of scope
 No canvas, no editor, no drag-drop. Components should render standalone but need
@@ -78,3 +99,5 @@ no editor awareness yet.
 
 ## Commit
 `feat(02): component registry + starter block set`
+
+Work on branch `feat/02-component-registry`, merge to `main` via PR per git steering.

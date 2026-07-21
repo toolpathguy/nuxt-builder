@@ -18,8 +18,8 @@ files. A Claude Code handoff path handles the 10% requiring judgment.
 
 | Layer | Technology |
 |-------|-----------|
-| Framework | Nuxt 4 (v4.5+) with `future.compatibilityVersion: 5` |
-| UI | Nuxt UI v3 (`@nuxt/ui`) — Tailwind CSS v4, Reka UI, Lucide icons |
+| Framework | Nuxt 4 (v4.5+) — stable defaults, no future.compatibilityVersion flag |
+| UI | Nuxt UI v4 (`@nuxt/ui`) — Tailwind CSS v4, Reka UI, Lucide icons |
 | State | Pinia (`@pinia/nuxt`) |
 | Validation | Zod |
 | Drag & Drop | `@formkit/drag-and-drop` |
@@ -101,22 +101,31 @@ A serializable JSON tree (`PageNode` with children/slots). Must survive
 | `/types/shared.ts` | `PropType`, `PropSchema`, `NodeId`, `makeNodeId()` |
 | `/types/registry.ts` | `RegistryEntry`, `Registry` |
 | `/types/page-document.ts` | `PageNode`, `PageDocument`, Zod schemas |
-| `/registry/index.ts` | Runtime registry + componentMap + helpers |
+| `/registry/entries.ts` | Pure registry data (NO .vue imports) — safe for compiler/CLI/server |
+| `/registry/index.ts` | componentMap (imports .vue) + re-exports entries — app-side only |
 | `/app/stores/editor.ts` | Pinia store: document, selection, CRUD |
 | `/compiler/compile.ts` | `compilePage()` entry point |
 | `/compiler/tree.ts` | Shared tree-walk utilities (pure) |
 | `/compiler/handoff.ts` | `buildHandoffPayload()` for Claude Code |
-| `nuxt.config.ts` | Nuxt 4 config with UI, Pinia, future compat |
+| `nuxt.config.ts` | Nuxt 4 config with UI, Pinia |
 | `app.config.ts` | Nuxt UI theme (primary color, neutral) |
 
 ## Conventions
 
 - TypeScript strict, no `any` — use discriminated unions
 - Commit messages: `feat(NN): short description`
+- Work on `feat/NN-*` branches, merge to `main` via PR per git steering — never
+  commit directly to main
 - Block components use Tailwind utilities (portable, no Nuxt UI dependency)
-- Editor chrome uses Nuxt UI components exclusively
+- Editor chrome uses Nuxt UI v4 components exclusively
+- Validation errors shown via `<UFormField :error="...">`, NOT `:error` on inputs
 - Tests required per task acceptance criteria
-- Forward compatibility: `future.compatibilityVersion: 5` enabled
+- Component tests use `mountSuspended` from `@nuxt/test-utils/runtime` with the
+  `nuxt` Vitest environment (bare @vue/test-utils will fail with Nuxt UI)
+- Registry purity: compiler, CLI, and server routes import ONLY from
+  `/registry/entries.ts` (never `/registry/index.ts` which pulls .vue files)
+- Columns block: only accepts Column children (enforced by registry + validation)
+- Zod pinned to ^4
 
 ## How to Update This File
 
@@ -125,3 +134,10 @@ After completing a task:
 2. Add the branch name if applicable
 3. Add any notes about deviations or decisions made
 4. Update "Key Files" if new important files were created
+
+## Decisions Log
+
+| Date | Decision | Context |
+|------|----------|---------|
+| — | @formkit/drag-and-drop spike required | Task 07 requires proving nested named-slot drops work before full wiring. If it can't, fall back to custom pointer-events for canvas, keep library for flat lists. |
+| — | Columns only accepts Column children | `allowedChildren: ['Column']` on Columns entry + `allowedParents: ['Columns']` on Column entry. Both validated by `validateAgainstRegistry` (Task 03). Drop-target guard (Task 07) checks both directions. Column.span is a number prop (min:1, max:4). |

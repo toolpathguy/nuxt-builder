@@ -41,10 +41,11 @@ come for free.
      still updates live.
 
 3. **Validation feedback.** If a value fails its schema (e.g. number out of range,
-   malformed URL), show an inline error using Nuxt UI's built-in form error
-   states (`:error` prop on inputs). Don't write the invalid value to the store.
-   Reuse the prop-level validation from Task 03 where possible rather than
-   re-implementing.
+   malformed URL), show an inline error by wrapping controls in
+   `<UFormField :error="errorMessage">`. Do NOT use an `:error` prop on the
+   inputs themselves — `UFormField` is the correct pattern for inline validation
+   display in Nuxt UI v4. Don't write the invalid value to the store. Reuse the
+   prop-level validation from Task 03 where possible rather than re-implementing.
 
 4. **Slot into the Inspector** (Task 05): when a node is selected, the Inspector
    renders `<PropertyPanel>` for it. Ensure switching selection resets control
@@ -65,8 +66,10 @@ come for free.
 - Out-of-range/invalid values are rejected with an inline message and don't
   corrupt the document.
 - Switching selection updates all controls to the new node's values.
-- Component tests cover: control rendering per type, store update on change, and
-  invalid-value rejection.
+- Component tests (using `mountSuspended` from `@nuxt/test-utils/runtime` with
+  the `nuxt` Vitest environment) cover: control rendering per type, store update
+  on change, and invalid-value rejection. Do not weaken or skip tests to work
+  around mounting errors — fix the environment.
 
 ## Out of scope
 No drag-drop (Task 07). No real image upload backend — the image control's
@@ -74,3 +77,5 @@ upload button is a stub. No page-meta editing beyond what Task 05 added.
 
 ## Commit
 `feat(06): schema-driven auto-generated property panel with Nuxt UI controls`
+
+Work on branch `feat/06-property-panel`, merge to `main` via PR per git steering.

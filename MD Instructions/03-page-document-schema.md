@@ -38,7 +38,10 @@ functions, no class instances. Anything in here must survive `JSON.stringify` â†
      beyond shape checks: every node `type` exists; every prop key is declared in
      that type's registry entry; prop values match their `PropType`; children only
      present when `acceptsChildren`; slot keys only present when declared in
-     `slots`. Return a list of typed errors `{ nodeId, path, message }`, not a
+     `slots`; when the parent's registry entry declares `allowedChildren`, every
+     child's `type` must be included in that array; when a child's registry entry
+     declares `allowedParents`, the parent's `type` must be included in that
+     array. Return a list of typed errors `{ nodeId, path, message }`, not a
      throw, so the UI can surface them.
 
 3. **Editor Pinia store** in `/app/stores/editor.ts`:
@@ -80,3 +83,5 @@ No UI. This is pure data + validation + store logic.
 
 ## Commit
 `feat(03): page document schema, registry validation, editor store`
+
+Work on branch `feat/03-page-document-schema`, merge to `main` via PR per git steering.

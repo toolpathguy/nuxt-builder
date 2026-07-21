@@ -16,10 +16,19 @@ so a real database could replace it later without touching the editor UI.
    interface:
    ```ts
    interface PageStore {
-     list(): Promise<PageSummary[]>;         // id, title, page, updatedAt
+     list(): Promise<PageSummary[]>;         // defined in /types/page-document.ts
      load(id: string): Promise<PageDocument>;
      save(doc: PageDocument): Promise<{ id: string }>;
      remove(id: string): Promise<void>;
+   }
+   ```
+   `PageSummary` must be defined in `/types/page-document.ts`:
+   ```ts
+   interface PageSummary {
+     id: string;
+     title: string;
+     page: string;
+     updatedAt: string; // ISO 8601
    }
    ```
    Provide one concrete implementation for dev.
@@ -65,6 +74,8 @@ so a real database could replace it later without touching the editor UI.
 - Importing an invalid or unknown-`version` document shows errors and does not
   corrupt the current document.
 - Server route rejects an invalid document with 422 + error list.
+- **Registry import rule:** Server routes import ONLY from `/registry/entries.ts`
+  (not `/registry/index.ts`) so no `.vue` files are pulled into Nitro.
 - Tests cover: round-trip export/import equality, and a 422 on invalid save.
 
 ## Out of scope
@@ -73,3 +84,5 @@ final handoff payload format is finalized in Task 10.
 
 ## Commit
 `feat(08): persistence — save/load/export/import + dev server backend`
+
+Work on branch `feat/08-persistence`, merge to `main` via PR per git steering.
