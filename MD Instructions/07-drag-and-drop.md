@@ -24,7 +24,7 @@ approach that works on both mouse and touch.
    If the library cannot cleanly handle nested-tree drops with named-slot targets,
    fall back to **custom pointer-event handling** for the canvas while keeping
    `@formkit/drag-and-drop` for flat lists (palette items, layer tree reorder).
-   Document the decision in AI-MAP.md under Notes.
+   Document the decision in AI-MAP.md's Decisions Log.
 
 1. **Drop targets & positioning.** A drop can land:
    - into a container node's default slot (between existing children — show an

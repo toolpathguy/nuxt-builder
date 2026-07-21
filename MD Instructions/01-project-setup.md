@@ -53,7 +53,7 @@ clean foundation with the folders, base types, and dev tooling in place.
    and asserts it returns a non-empty string, to prove Vitest is wired up.
 
 8. **Testing environment configuration:** Configure `vitest.config.ts` using
-   `defineVitestConfig` from `@nuxt/test-utils/e2e`. Set the Vitest environment
+   `defineVitestConfig` from `@nuxt/test-utils/config`. Set the Vitest environment
    to `'nuxt'` so that component tests mounting Nuxt UI components (Tasks 05, 06)
    can use `mountSuspended` from `@nuxt/test-utils/runtime` without failing. This
    is required because bare `@vue/test-utils` mounting of Nuxt UI components

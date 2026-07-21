@@ -24,6 +24,9 @@ none of those need to hardcode component knowledge. Read `00-START-HERE.md` and
      props: Record<string, PropSchema>;   // editable props (from shared.ts)
      slots?: string[];             // named slots that accept child nodes
      acceptsChildren: boolean;     // whether default slot takes children
+     // Restricts which node types may appear as default-slot children.
+     // Omitted = any type allowed (subject to acceptsChildren).
+     allowedChildren?: string[];
      // A compiler hint: the tag/name the compiler emits. Defaults to `type`.
      compileAs?: string;
    }
@@ -47,8 +50,8 @@ none of those need to hardcode component knowledge. Read `00-START-HERE.md` and
    | type | category | key props | slots / children |
    |------|----------|-----------|------------------|
    | `Section`  | layout  | `padding(enum sm/md/lg)`, `bg(color)`, `maxWidth(enum full/wide/narrow)` | acceptsChildren |
-   | `Columns`  | layout  | `gap(enum sm/md/lg)` | acceptsChildren (ONLY accepts `Column` children) |
-   | `Column`   | layout  | `span(enum 1/2/3/4)` | acceptsChildren |
+   | `Columns`  | layout  | `gap(enum sm/md/lg)` | acceptsChildren, `allowedChildren: ['Column']` |
+   | `Column`   | layout  | `span(number min:1 max:4 step:1)` | acceptsChildren |
    | `Hero`     | content | `heading(string)`, `subheading(text)`, `align(enum left/center)`, `bg(color)` | slot: `actions` |
    | `Heading`  | content | `text(string)`, `level(enum h1..h4)`, `align(enum)` | none |
    | `Text`     | content | `body(text)`, `align(enum)` | none |
@@ -82,9 +85,11 @@ none of those need to hardcode component knowledge. Read `00-START-HERE.md` and
 - Each block component can be imported and mounted in isolation without errors.
 - **Purity check:** `/registry/entries.ts` has zero `.vue` imports; importing it
   from a plain Node/tsx script does not throw.
-- **Columns rule:** `Columns` only accepts `Column` children; the registry entry
-  and validation enforce this. Task 07 (drop targets) and Task 09 (compilation)
-  can rely on this invariant.
+- **Columns rule:** `Columns` declares `allowedChildren: ['Column']`; the registry
+  entry enforces this constraint. A bare `Column` outside a `Columns` parent is
+  NOT validated here — that invariant is enforced by drop-target logic (Task 07)
+  and is tolerated by the validator. Tasks 07 (drop targets) and 09 (compilation)
+  rely on the rule that `Columns` only ever contains `Column` children.
 
 ## Out of scope
 No canvas, no editor, no drag-drop. Components should render standalone but need
