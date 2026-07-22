@@ -2,9 +2,8 @@ name: Claude PR Review
 
 on:
   pull_request:
-    types: [opened, ready_for_review, synchronize]
+    types: [opened, ready_for_review]
 
-# Cancel a superseded review when new commits are pushed — cost control.
 concurrency:
   group: claude-review-${{ github.event.pull_request.number }}
   cancel-in-progress: true
@@ -16,8 +15,7 @@ permissions:
   id-token: write
 
 jobs:
-  # ---------- Gate: run CI checks first so Claude doesn't waste tokens ----------
-  # Skips gracefully if package.json doesn't exist yet (spec-only PRs).
+  # ---------- CI gate: unchanged behavior, runs in parallel with review ----------
   ci:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
@@ -60,54 +58,67 @@ jobs:
       - run: npm run build
         if: steps.check.outputs.has_project == 'true'
 
-  # ---------- Claude review: only runs if CI passes ----------
+  # ---------- Claude review: parallel with CI, posts via gh + inline comments ----------
   review:
-    needs: ci
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          track_progress: true
           prompt: |
-            Review pull request #${{ github.event.pull_request.number }} in
-            ${{ github.repository }} as a rigorous senior reviewer. Post your
-            review as a PR comment, with file-anchored comments for specific
-            issues. End with a clear verdict: approve, approve-with-nits, or
-            request-changes, and list blocking items separately from nits.
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
 
-            Project context: this repo is a visual page builder for Nuxt,
-            built task-by-task from specs. Read .kiro/steering/AI-MAP.md and
-            the relevant files in ".kiro/specs/" and "MD Instructions/" before
-            judging the diff — PRs here are usually either spec documents or
-            implementations of a spec.
+            Review this pull request as a rigorous senior reviewer. Be
+            efficient: you have a limited turn budget, so read only what
+            you need and post as you go.
 
-            CI (tests, lint, typecheck, build) has ALREADY PASSED in a prior
-            job. Do NOT re-run npm ci, npm test, npm run lint, npm run
-            typecheck, or npm run build. Focus exclusively on code review.
+            HOW TO POST — required, not optional:
+            - Post file-anchored issues with the
+              mcp__github_inline_comment__create_inline_comment tool,
+              passing confirmed: true, AS YOU FIND THEM — do not save
+              them all for the end.
+            - Post ONE top-level summary with `gh pr comment` as your
+              final action: verdict (approve / approve-with-nits /
+              request-changes), blocking items, then nits.
+            - Review text not posted to GitHub does not exist.
 
-            Review standards for this repo, in priority order:
+            WHAT TO READ — in this order, nothing more unless the diff
+            demands it:
+            1. `gh pr diff` — the change itself.
+            2. .kiro/steering/AI-MAP.md — conventions and Decisions Log
+               (settled; do not relitigate).
+            3. ONLY the spec files in .kiro/specs/ and "MD Instructions/"
+               that this PR implements or modifies, identified from the
+               PR title/branch/diff. Do not read the full spec library.
 
-            1. Spec traceability. If the PR implements a numbered task, check
-               the implementation against that spec's acceptance criteria and
-               flag criteria that are unmet or silently reinterpreted.
+            Review standards, in priority order:
+            1. Spec traceability — implementation vs. that spec's
+               acceptance criteria; flag unmet or silently reinterpreted
+               criteria.
+            2. Consistency — contradictions between the diff, AI-MAP.md,
+               the relevant spec, and its MD Instruction file, including
+               stale version pins and paths.
+            3. Registry purity — nothing imported by /compiler, its CLI,
+               or /server may transitively import .vue files.
+            4. Correctness, types (no `any`), security, and whether
+               tests assert what they claim.
 
-            2. Consistency across sources of truth. Flag contradictions
-               between the diff, .kiro/steering/AI-MAP.md, .kiro/specs/, and
-               "MD Instructions/" — including stale version pins and paths.
+            CI (lint, typecheck, tests, build) runs in a parallel job —
+            do NOT run npm commands. Check CI status with
+            `gh pr checks` if relevant; if CI is still running, note
+            that your review is code-level only.
 
-            3. Registry purity rule: nothing imported by /compiler, its CLI,
-               or /server may transitively import .vue files. Check imports.
-
-            4. Standard review: correctness, types (no `any`), security,
-               and whether tests actually assert what they claim.
-
-            Do not restate the diff or praise padding. Credit genuinely good
-            decisions in one or two lines. Be specific enough that a follow-up
-            commit can address every point without asking questions.
-          claude_args: "--max-turns 20"
+            Do not restate the diff or praise padding. Credit genuinely
+            good decisions in one or two lines, inside the summary
+            comment.
+          claude_args: |
+            --max-turns 12
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr checks:*)"
