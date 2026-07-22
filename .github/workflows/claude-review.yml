@@ -1,0 +1,73 @@
+name: Claude PR Review
+
+on:
+  pull_request:
+    types: [opened, ready_for_review, synchronize]
+
+# Cancel a superseded review when new commits are pushed — cost control.
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  id-token: write
+
+jobs:
+  review:
+    # Skip drafts; review when marked ready.
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history so Claude can diff against base
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            Review pull request #${{ github.event.pull_request.number }} in
+            ${{ github.repository }} as a rigorous senior reviewer. Post your
+            review as a PR comment, with file-anchored comments for specific
+            issues. End with a clear verdict: approve, approve-with-nits, or
+            request-changes, and list blocking items separately from nits.
+
+            Project context: this repo is a visual page builder for Nuxt,
+            built task-by-task from specs. Read .kiro/steering/AI-MAP.md and
+            the relevant files in ".kiro/specs/" and "MD Instructions/" before
+            judging the diff — PRs here are usually either spec documents or
+            implementations of a spec.
+
+            Review standards for this repo, in priority order:
+
+            1. VERIFY, don't trust. If the PR contains code, run the actual
+               acceptance toolchain from a clean state: npm ci (a lockfile out
+               of sync with package.json is an automatic blocker), then
+               npm test, npm run typecheck, npm run lint, npm run build.
+               Report exact failures. A fresh clone must work — missing
+               postinstall/prepare steps are blockers, not nits.
+
+            2. Spec traceability. If the PR implements a numbered task, check
+               the implementation against that spec's acceptance criteria and
+               flag criteria that are unmet or silently reinterpreted.
+
+            3. Consistency across sources of truth. Flag contradictions
+               between the diff, .kiro/steering/AI-MAP.md, .kiro/specs/, and
+               "MD Instructions/" — including stale version pins and paths.
+
+            4. Registry purity rule: nothing imported by /compiler, its CLI,
+               or /server may transitively import .vue files. Check imports.
+
+            5. Standard review: correctness, types (no `any`), security,
+               and whether tests actually assert what they claim.
+
+            Do not restate the diff or praise padding. Credit genuinely good
+            decisions in one or two lines. Be specific enough that a follow-up
+            commit can address every point without asking questions.
+          claude_args: |
+            --max-turns 30
+            --allowedTools "Bash(npm ci),Bash(npm install),Bash(npm test),Bash(npm run typecheck),Bash(npm run lint),Bash(npm run build),Bash(npx nuxt prepare),Bash(git diff:*),Bash(git log:*)"

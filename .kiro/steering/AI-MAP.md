@@ -126,6 +126,10 @@ A serializable JSON tree (`PageNode` with children/slots). Must survive
   `/registry/entries.ts` (never `/registry/index.ts` which pulls .vue files)
 - Columns block: only accepts Column children (enforced by registry + validation)
 - Zod pinned to ^4
+- PRs are automatically reviewed by Claude via
+  `.github/workflows/claude-review.yml`. Review feedback posted by the
+  github-actions Claude bot on a PR should be treated like human review
+  feedback: address blockers before merge.
 
 ## How to Update This File
 
@@ -141,3 +145,4 @@ After completing a task:
 |------|----------|---------|
 | — | @formkit/drag-and-drop spike required | Task 07 requires proving nested named-slot drops work before full wiring. If it can't, fall back to custom pointer-events for canvas, keep library for flat lists. |
 | — | Columns only accepts Column children | `allowedChildren: ['Column']` on Columns entry + `allowedParents: ['Columns']` on Column entry. Both validated by `validateAgainstRegistry` (Task 03). Drop-target guard (Task 07) checks both directions. Column.span is a number prop (min:1, max:4). |
+| — | CLAUDE.md mirrors steering conventions for non-Kiro agents | `CLAUDE.md` at the repo root provides the same project conventions to Claude Code and the GitHub Actions reviewer. When conventions in `.kiro/steering/` change, `CLAUDE.md` must be updated in sync. |
