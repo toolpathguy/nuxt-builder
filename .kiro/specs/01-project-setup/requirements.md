@@ -32,7 +32,7 @@ Reference: #[[file:MD Instructions/01-project-setup.md]]
 2. THE Nuxt_Config SHALL set `typescript.strict` to `true` and `typescript.typeCheck` to `true`.
 3. THE Nuxt_Config SHALL set `ssr` to `true`.
 4. THE Nuxt_Config SHALL NOT include `future.compatibilityVersion` set to `5`, either by omitting the key or by setting it to a value less than `5`.
-5. WHEN the scaffold is complete, THE project SHALL compile successfully via `npx nuxi build` with zero TypeScript errors.
+5. THE Scaffold SHALL always complete successfully without halting due to internal errors, and WHEN the scaffold is complete, THE project SHALL compile successfully via `npx nuxi build` with zero TypeScript errors.
 6. THE Scaffold SHALL produce a valid `package.json` with Nuxt 4 listed as a dependency and a corresponding lockfile in the repository root.
 
 ### Requirement 2: Install and Register Dependencies
@@ -47,7 +47,7 @@ Reference: #[[file:MD Instructions/01-project-setup.md]]
 4. THE Scaffold SHALL install `zod` with a version constraint of `^4` in `package.json` `dependencies`.
 5. THE Scaffold SHALL install `@formkit/drag-and-drop` in `package.json` `dependencies`.
 6. THE Scaffold SHALL install `@nuxt/eslint` in `package.json` `devDependencies`, add `'@nuxt/eslint'` to the `modules` array in `nuxt.config.ts`, and generate an `eslint.config.mjs` file that imports and applies the flat config provided by `@nuxt/eslint`.
-7. WHEN `npm install` is executed in the project root, THE Scaffold SHALL resolve all dependencies without unresolved peer-dependency errors.
+7. WHEN the scaffold has completed dependency setup from AC1–AC6 and `npm install` is executed in the project root, THE Scaffold SHALL resolve all dependencies without unresolved peer-dependency errors.
 
 ### Requirement 3: Create Directory Skeleton
 
@@ -84,9 +84,9 @@ Reference: #[[file:MD Instructions/01-project-setup.md]]
 3. THE Package_Scripts SHALL include a `generate` script that pre-renders static pages using `nuxi generate`.
 4. THE Package_Scripts SHALL include a `lint` script that runs ESLint in report-only mode (no auto-fix) against the project source files and exits with a non-zero code when violations are found.
 5. THE Package_Scripts SHALL include a `lint:fix` script that runs ESLint with auto-fix enabled against the project source files.
-6. THE Package_Scripts SHALL include a `typecheck` script that runs `nuxt typecheck` and exits with a non-zero code when type errors are found.
-7. THE Package_Scripts SHALL include a `test` script that runs `vitest run` in single-execution mode (not watch mode) and exits with a non-zero code when any test fails.
-8. THE Package_Scripts SHALL include a `test:watch` script that runs Vitest in watch mode.
+6. THE Package_Scripts SHALL include a `typecheck` script that runs `nuxt typecheck` and exits with a non-zero code when type errors are found; `typecheck` SHALL NOT invoke Vitest or any test runner.
+7. THE Package_Scripts SHALL include a `test` script that runs `vitest run` in single-execution mode (not watch mode), SHALL NOT default to or fall back to watch mode, and SHALL exit with a non-zero code when any test fails.
+8. THE Package_Scripts SHALL include a `test:watch` script that runs Vitest in watch mode; this SHALL be the only script that invokes Vitest in watch mode.
 
 ### Requirement 6: Create Placeholder Pages
 
