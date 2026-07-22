@@ -143,7 +143,9 @@ Scaffold a Nuxt 4 + TypeScript workspace with strict typing, all required depend
     { "id": 2, "tasks": ["2.1", "2.2", "2.3", "3.1", "3.2"] },
     { "id": 3, "tasks": ["2.4"] },
     { "id": 4, "tasks": ["4.1", "5.1", "5.2"] },
-    { "id": 5, "tasks": ["4.2", "4.3", "7.1", "7.2", "7.3", "8.1"] }
+    { "id": 5, "tasks": ["4.2", "4.3", "7.1", "7.2", "7.3", "8.1"] },
+    { "id": 6, "tasks": ["6"] },
+    { "id": 7, "tasks": ["9"] }
   ]
 }
 ```

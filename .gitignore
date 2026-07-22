@@ -4,6 +4,7 @@ node_modules/
 # Build output
 .output/
 .nuxt/
+.nuxtrc
 dist/
 
 # Dev data (persistence backend)

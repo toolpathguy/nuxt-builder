@@ -9,12 +9,15 @@ describe('Feature: 01-project-setup', () => {
   /**
    * Property 1: makeNodeId format validity
    * Validates: Requirements 4.4, 7.3
+   * Generated input: batch size (1–50), verifying format holds regardless of call volume
    */
   it('Property 1: makeNodeId format validity', () => {
     fc.assert(
-      fc.property(fc.constant(null), () => {
-        const id = makeNodeId()
-        expect(id).toMatch(UUID_V4_REGEX)
+      fc.property(fc.integer({ min: 1, max: 50 }), (batchSize) => {
+        for (let i = 0; i < batchSize; i++) {
+          const id = makeNodeId()
+          expect(id).toMatch(UUID_V4_REGEX)
+        }
       }),
       { numRuns: 100 }
     )
