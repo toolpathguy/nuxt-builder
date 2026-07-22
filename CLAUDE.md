@@ -25,5 +25,7 @@ reviewer, Claude Code sessions) must follow the same project conventions.
 - Component tests mounting Nuxt UI components use `mountSuspended` from
   `@nuxt/test-utils/runtime` (Vitest environment `nuxt`); pure unit tests
   opt into node via a `// @vitest-environment node` docblock.
-- A fresh clone must pass: `npm ci && npm test && npm run typecheck &&
-  npm run lint && npm run build`.
+- A fresh clone must pass: `npm ci && npm run lint && npm run typecheck &&
+  npm test && npm run build`.
+- CI runs these checks as a gate before the Claude review job. Claude does
+  not re-run them — it focuses on code review only.
