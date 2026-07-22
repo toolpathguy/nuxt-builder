@@ -107,17 +107,6 @@ jobs:
             Do not restate the diff or praise padding. Credit genuinely good
             decisions in one or two lines. Be specific enough that a follow-up
             commit can address every point without asking questions.
-          allowed_tools: |
-            Read
-            Grep
-            Glob
-            MultiGrep
-            Bash(git diff:*)
-            Bash(git log:*)
-            Bash(cat:*)
-            Bash(find:*)
-            Bash(ls:*)
-            Bash(head:*)
-            Bash(tail:*)
-            Bash(wc:*)
-          max_turns: "20"
+          claude_args: |
+            --max-turns 20
+            --allowedTools "Read,Grep,Glob,MultiGrep,Bash(git diff:*),Bash(git log:*),Bash(cat:*),Bash(find:*),Bash(ls:*),Bash(head:*),Bash(tail:*),Bash(wc:*)"
