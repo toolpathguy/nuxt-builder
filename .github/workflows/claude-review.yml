@@ -43,6 +43,9 @@ jobs:
       - run: npm ci
         if: steps.check.outputs.has_project == 'true'
 
+      - run: npx nuxt prepare
+        if: steps.check.outputs.has_project == 'true'
+
       - run: npm run lint
         if: steps.check.outputs.has_project == 'true'
 
