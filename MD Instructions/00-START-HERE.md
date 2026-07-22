@@ -58,13 +58,21 @@ finish and you can verify before moving on.
 
 - **Stack:** Nuxt 4 (v4.5+, latest stable), Vue 3 `<script setup>`, TypeScript
   strict, Pinia for state, Vitest + Vue Test Utils for tests.
-- **UI framework:** Nuxt UI v4 (`@nuxt/ui`) for all editor chrome (inputs,
-  buttons, selects, modals, color pickers, etc.). Styling via Tailwind CSS v4
-  (ships with Nuxt UI). Use `app.config.ts` for theme customization.
+- **UI framework:** Nuxt UI v4 (`@nuxt/ui`) for both the editor chrome (inputs,
+  buttons, selects, modals, color pickers, etc.) AND as the primary building
+  blocks in the visual builder (UPageHero, UPageSection, UButton, etc.). Styling
+  via Tailwind CSS v4 (ships with Nuxt UI). Use `app.config.ts` for theme
+  customization.
+- **Building blocks:** The Component Registry wraps real Nuxt UI page-building
+  components (UPageHero, UPageSection, UPageColumns, UPageGrid, UPageCTA,
+  UPageFeature, UPageCard, UButton, UCard, USeparator) as the primary placeable
+  blocks. A small set of custom gap-filler blocks (RichText, Image, Spacer)
+  covers functionality Nuxt UI doesn't provide. The compiled output uses Nuxt UI
+  components directly — no custom component layer.
 - **Layout model:** section/block **flow grid**, NOT absolute free-drag
   positioning. This keeps generated Vue clean and responsive.
-- **The editor is itself a Nuxt app.** The canvas renders the real components via
-  `<component :is>`, so the preview *is* production output.
+- **The editor is itself a Nuxt app.** The canvas renders the real Nuxt UI
+  components via `<component :is>`, so the preview *is* production output.
 - **Type everything.** The Registry and Page Document have shared TS types in
   `/types`. Never duplicate a type; import it.
 - **No `any`.** Prefer discriminated unions for node types.

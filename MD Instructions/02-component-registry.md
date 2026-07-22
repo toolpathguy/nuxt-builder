@@ -40,27 +40,37 @@ none of those need to hardcode component knowledge. Read `00-START-HERE.md` and
    entry (missing label, unknown prop type, `acceptsChildren:false` but declares
    default-slot children) should throw a clear error naming the entry.
 
-3. **Starter component set.** Create real Nuxt components under
-   `/app/components/blocks/` AND their registry entries. Each component:
+3. **Starter component set.** Create thin wrapper Nuxt components under
+   `/app/components/blocks/` AND their registry entries. The primary blocks wrap
+   real Nuxt UI components; a few custom gap-fillers handle what Nuxt UI lacks.
+
+   Each Nuxt UI wrapper component:
    - Uses `<script setup lang="ts">` with `defineProps` typed to match its
      registry `props`.
+   - Passes all registered props through to the actual Nuxt UI component.
    - Renders cleanly with sensible defaults so it looks fine on an empty canvas.
-   - Uses Tailwind CSS v4 utility classes for styling. Keep components simple and
-     self-contained — no dependency on Nuxt UI (blocks should be portable for
-     the compiled output).
+   - Sets `compileAs` in the registry entry to the actual Nuxt UI tag name
+     (e.g., `compileAs: 'UPageHero'`).
+
+   Custom gap-filler components use Tailwind CSS v4 utility classes and have no
+   `compileAs` (they compile as their own component name).
 
    Minimum set:
-   | type | category | key props | slots / children |
-   |------|----------|-----------|------------------|
-   | `Section`  | layout  | `padding(enum sm/md/lg)`, `bg(color)`, `maxWidth(enum full/wide/narrow)` | acceptsChildren |
-   | `Columns`  | layout  | `gap(enum sm/md/lg)` | acceptsChildren, `allowedChildren: ['Column']` |
-   | `Column`   | layout  | `span(number min:1 max:4 step:1)` | acceptsChildren, `allowedParents: ['Columns']` |
-   | `Hero`     | content | `heading(string)`, `subheading(text)`, `align(enum left/center)`, `bg(color)` | slot: `actions` |
-   | `Heading`  | content | `text(string)`, `level(enum h1..h4)`, `align(enum)` | none |
-   | `Text`     | content | `body(text)`, `align(enum)` | none |
-   | `Button`   | content | `label(string)`, `href(url)`, `variant(enum primary/secondary/ghost)` | none |
-   | `Image`    | media   | `src(image)`, `alt(string)`, `rounded(boolean)` | none |
-   | `Spacer`   | layout  | `size(enum sm/md/lg)` | none |
+   | type | compileAs | category | key props | children |
+   |------|-----------|----------|-----------|----------|
+   | `PageHero`    | UPageHero    | layout  | `title(string)`, `description(text)`, `headline(string)`, `orientation(enum vertical/horizontal)` | none |
+   | `PageSection` | UPageSection | layout  | `title(string)`, `description(text)`, `headline(string)`, `orientation(enum)`, `reverse(boolean)` | acceptsChildren |
+   | `PageColumns` | UPageColumns | layout  | (none) | acceptsChildren |
+   | `PageGrid`    | UPageGrid    | layout  | (none) | acceptsChildren |
+   | `PageCTA`     | UPageCTA     | content | `title(string)`, `description(text)`, `headline(string)` | none |
+   | `PageFeature` | UPageFeature | content | `title(string)`, `description(text)`, `icon(string)`, `orientation(enum)` | none |
+   | `PageCard`    | UPageCard    | content | `title(string)`, `description(text)`, `to(url)` | none |
+   | `Button`      | UButton      | content | `label(string)`, `to(url)`, `color(enum)`, `variant(enum)`, `size(enum)` | none |
+   | `Card`        | UCard        | content | (none) | acceptsChildren |
+   | `Separator`   | USeparator   | layout  | `orientation(enum horizontal/vertical)`, `label(string)` | none |
+   | `RichText`    | (custom)     | content | `body(text)`, `align(enum)` | none |
+   | `Image`       | (custom)     | media   | `src(image)`, `alt(string)`, `rounded(boolean)` | none |
+   | `Spacer`      | (custom)     | layout  | `size(enum sm/md/lg)` | none |
 
 4. **Registry purity split:**
    - **`/registry/entries.ts`** — export all `RegistryEntry` data as pure data
@@ -83,15 +93,13 @@ none of those need to hardcode component knowledge. Read `00-START-HERE.md` and
 ## Acceptance criteria
 - `npm run typecheck` passes.
 - A unit test in `/tests/registry.test.ts` asserts: every `componentMap` key has a
-  matching `registry` entry and vice-versa; `defaultPropsFor('Hero')` returns the
-  declared defaults; zod validation throws on a deliberately broken entry.
+  matching `registry` entry and vice-versa; `defaultPropsFor('PageHero')` returns
+  the declared defaults; zod validation throws on a deliberately broken entry.
 - Each block component can be imported and mounted in isolation without errors.
 - **Purity check:** `/registry/entries.ts` has zero `.vue` imports; importing it
   from a plain Node/tsx script does not throw.
-- **Columns rule:** `Columns` declares `allowedChildren: ['Column']` and `Column`
-  declares `allowedParents: ['Columns']`. Both constraints are validated by
-  `validateAgainstRegistry` (Task 03) and enforced by drop-target guards
-  (Task 07). Tasks 07 and 09 rely on these invariants.
+- **Nuxt UI blocks:** Every Nuxt UI wrapper block has a `compileAs` field starting
+  with `'U'` and renders the actual Nuxt UI component in the editor canvas.
 
 ## Out of scope
 No canvas, no editor, no drag-drop. Components should render standalone but need
