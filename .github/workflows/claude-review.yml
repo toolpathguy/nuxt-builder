@@ -17,6 +17,7 @@ permissions:
 
 jobs:
   # ---------- Gate: run CI checks first so Claude doesn't waste tokens ----------
+  # Skips gracefully if package.json doesn't exist yet (spec-only PRs).
   ci:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
@@ -24,22 +25,37 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check if project has been scaffolded
+        id: check
+        run: |
+          if [ -f package.json ]; then
+            echo "has_project=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_project=false" >> "$GITHUB_OUTPUT"
+            echo "No package.json found — skipping CI (spec-only PR)"
+          fi
+
       - uses: actions/setup-node@v4
+        if: steps.check.outputs.has_project == 'true'
         with:
           node-version: 22
-          cache: npm
 
       - run: npm ci
+        if: steps.check.outputs.has_project == 'true'
 
       - run: npm run lint
+        if: steps.check.outputs.has_project == 'true'
 
       - run: npm run typecheck
+        if: steps.check.outputs.has_project == 'true'
 
       - run: npm test -- --run
+        if: steps.check.outputs.has_project == 'true'
         env:
           CI: true
 
       - run: npm run build
+        if: steps.check.outputs.has_project == 'true'
 
   # ---------- Claude review: only runs if CI passes ----------
   review:
