@@ -51,7 +51,6 @@ graph TB
 
     subgraph Testing["Testing"]
         TESTS["tests/smoke.test.ts"]
-        SPECS["specs/"]
     end
 
     NC -->|"modules"| UI["nuxt-ui"]
@@ -79,6 +78,7 @@ graph LR
         VTU["vue-test-utils"]
         NTU["nuxt-test-utils"]
         HD["happy-dom"]
+        TSC["typescript + vue-tsc"]
     end
 ```
 
@@ -334,8 +334,6 @@ project-root/
 │   └── .gitkeep
 ├── tests/
 │   └── smoke.test.ts
-├── specs/
-│   └── .gitkeep
 ├── server/
 │   └── .gitkeep
 ├── nuxt.config.ts

@@ -7,10 +7,10 @@ Scaffold a Nuxt 4 + TypeScript workspace with strict typing, all required depend
 ## Tasks
 
 - [ ] 1. Initialize Nuxt 4 project and core configuration
-  - [ ] 1.1 Initialize a new Nuxt 4 project in the repository root
-    - Run `npx nuxi@latest init .` (or equivalent) to scaffold the base Nuxt 4 project
-    - Ensure `package.json` lists `nuxt` v4.5+ as a dependency
-    - Ensure `tsconfig.json` is present at the root
+  - [ ] 1.1 Author the base Nuxt 4 project files manually (do NOT run `nuxi init` — the repo is non-empty and the wizard prompts interactively)
+    - Create `package.json` with `nuxt` v4.5+ as a dependency, per the design doc
+    - Create `nuxt.config.ts` and `tsconfig.json` per the design doc
+    - Run `npm install` to generate the lockfile
     - _Requirements: 1.1, 1.5, 1.6_
 
   - [ ] 1.2 Configure `nuxt.config.ts` with TypeScript strict mode and SSR
@@ -33,7 +33,7 @@ Scaffold a Nuxt 4 + TypeScript workspace with strict typing, all required depend
     - _Requirements: 2.1, 2.2, 2.4, 2.5_
 
   - [ ] 2.2 Install dev dependencies and configure ESLint
-    - Install `vitest`, `@vue/test-utils`, `@nuxt/test-utils`, `happy-dom` as devDependencies
+    - Install `vitest`, `@vue/test-utils`, `@nuxt/test-utils`, `happy-dom`, `typescript`, and `vue-tsc` as devDependencies
     - Install `@nuxt/eslint` as devDependency, add `'@nuxt/eslint'` to `modules`
     - Create `eslint.config.mjs` importing and applying the flat config from `@nuxt/eslint`
     - _Requirements: 2.3, 2.6_
@@ -49,7 +49,7 @@ Scaffold a Nuxt 4 + TypeScript workspace with strict typing, all required depend
 - [ ] 3. Create directory skeleton and CSS asset
   - [ ] 3.1 Create all required directories with `.gitkeep` placeholders
     - Create `app/components/blocks/`, `app/components/editor/`, `app/composables/`, `app/stores/`, `app/pages/`
-    - Create `types/`, `registry/`, `compiler/`, `tests/`, `specs/`, `server/`
+    - Create `types/`, `registry/`, `compiler/`, `tests/`, `server/`
     - Place `.gitkeep` in each empty directory
     - _Requirements: 3.1, 3.2, 3.3, 3.4_
 
@@ -142,8 +142,8 @@ Scaffold a Nuxt 4 + TypeScript workspace with strict typing, all required depend
     { "id": 1, "tasks": ["1.2", "1.3"] },
     { "id": 2, "tasks": ["2.1", "2.2", "2.3", "3.1", "3.2"] },
     { "id": 3, "tasks": ["2.4"] },
-    { "id": 4, "tasks": ["4.1", "5.1", "5.2", "7.1", "7.2", "7.3"] },
-    { "id": 5, "tasks": ["4.2", "4.3", "8.1"] }
+    { "id": 4, "tasks": ["4.1", "5.1", "5.2"] },
+    { "id": 5, "tasks": ["4.2", "4.3", "7.1", "7.2", "7.3", "8.1"] }
   ]
 }
 ```

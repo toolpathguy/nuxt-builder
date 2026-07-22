@@ -32,7 +32,7 @@ Reference: #[[file:MD Instructions/01-project-setup.md]]
 2. THE Nuxt_Config SHALL set `typescript.strict` to `true` and `typescript.typeCheck` to `true`.
 3. THE Nuxt_Config SHALL set `ssr` to `true`.
 4. THE Nuxt_Config SHALL NOT include `future.compatibilityVersion` set to `5`, either by omitting the key or by setting it to a value less than `5`.
-5. THE Scaffold SHALL always complete successfully without halting due to internal errors, and WHEN the scaffold is complete, THE project SHALL compile successfully via `npx nuxi build` with zero TypeScript errors.
+5. WHEN the scaffold is complete, THE project SHALL compile successfully via `npx nuxi build` with zero TypeScript errors.
 6. THE Scaffold SHALL produce a valid `package.json` with Nuxt 4 listed as a dependency and a corresponding lockfile in the repository root.
 
 ### Requirement 2: Install and Register Dependencies
@@ -43,7 +43,7 @@ Reference: #[[file:MD Instructions/01-project-setup.md]]
 
 1. THE Scaffold SHALL install `@nuxt/ui` with a version constraint of `^4` in `package.json` `dependencies` and add `'@nuxt/ui'` to the `modules` array in `nuxt.config.ts`.
 2. THE Scaffold SHALL install `@pinia/nuxt` and `pinia` in `package.json` `dependencies` and add `'@pinia/nuxt'` to the `modules` array in `nuxt.config.ts`.
-3. THE Scaffold SHALL install `vitest`, `@vue/test-utils`, `@nuxt/test-utils`, and `happy-dom` in `package.json` `devDependencies`.
+3. THE Scaffold SHALL install `vitest`, `@vue/test-utils`, `@nuxt/test-utils`, `happy-dom`, `typescript`, and `vue-tsc` in `package.json` `devDependencies`.
 4. THE Scaffold SHALL install `zod` with a version constraint of `^4` in `package.json` `dependencies`.
 5. THE Scaffold SHALL install `@formkit/drag-and-drop` in `package.json` `dependencies`.
 6. THE Scaffold SHALL install `@nuxt/eslint` in `package.json` `devDependencies`, add `'@nuxt/eslint'` to the `modules` array in `nuxt.config.ts`, and generate an `eslint.config.mjs` file that imports and applies the flat config provided by `@nuxt/eslint`.
@@ -56,7 +56,7 @@ Reference: #[[file:MD Instructions/01-project-setup.md]]
 #### Acceptance Criteria
 
 1. THE Scaffold SHALL create the following directories relative to the project root: `app/components/blocks`, `app/components/editor`, `app/composables`, `app/stores`, `app/pages`.
-2. THE Scaffold SHALL create the following directories relative to the project root: `types`, `registry`, `compiler`, `tests`, `specs`, `server`.
+2. THE Scaffold SHALL create the following directories relative to the project root: `types`, `registry`, `compiler`, `tests`, `server`.
 3. IF any directory listed in criteria 1 or 2 already exists, THEN THE Scaffold SHALL skip that directory without error and without modifying its existing contents.
 4. WHEN a directory in the skeleton contains no files after creation, THE Scaffold SHALL place a `.gitkeep` file in that directory so that version control tracks the empty folder.
 5. IF directory creation fails due to a filesystem error, THEN THE Scaffold SHALL report an error message indicating which directory could not be created and halt further scaffold execution.
