@@ -16,15 +16,41 @@ permissions:
   id-token: write
 
 jobs:
-  review:
-    # Skip drafts; review when marked ready.
+  # ---------- Gate: run CI checks first so Claude doesn't waste tokens ----------
+  ci:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run lint
+
+      - run: npm run typecheck
+
+      - run: npm test -- --run
+        env:
+          CI: true
+
+      - run: npm run build
+
+  # ---------- Claude review: only runs if CI passes ----------
+  review:
+    needs: ci
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # full history so Claude can diff against base
+          fetch-depth: 0
 
       - uses: anthropics/claude-code-action@v1
         with:
@@ -42,32 +68,40 @@ jobs:
             judging the diff — PRs here are usually either spec documents or
             implementations of a spec.
 
+            CI (tests, lint, typecheck, build) has ALREADY PASSED in a prior
+            job. Do NOT re-run npm ci, npm test, npm run lint, npm run
+            typecheck, or npm run build. Focus exclusively on code review.
+
             Review standards for this repo, in priority order:
 
-            1. VERIFY, don't trust. If the PR contains code, run the actual
-               acceptance toolchain from a clean state: npm ci (a lockfile out
-               of sync with package.json is an automatic blocker), then
-               npm test, npm run typecheck, npm run lint, npm run build.
-               Report exact failures. A fresh clone must work — missing
-               postinstall/prepare steps are blockers, not nits.
-
-            2. Spec traceability. If the PR implements a numbered task, check
+            1. Spec traceability. If the PR implements a numbered task, check
                the implementation against that spec's acceptance criteria and
                flag criteria that are unmet or silently reinterpreted.
 
-            3. Consistency across sources of truth. Flag contradictions
+            2. Consistency across sources of truth. Flag contradictions
                between the diff, .kiro/steering/AI-MAP.md, .kiro/specs/, and
                "MD Instructions/" — including stale version pins and paths.
 
-            4. Registry purity rule: nothing imported by /compiler, its CLI,
+            3. Registry purity rule: nothing imported by /compiler, its CLI,
                or /server may transitively import .vue files. Check imports.
 
-            5. Standard review: correctness, types (no `any`), security,
+            4. Standard review: correctness, types (no `any`), security,
                and whether tests actually assert what they claim.
 
             Do not restate the diff or praise padding. Credit genuinely good
             decisions in one or two lines. Be specific enough that a follow-up
             commit can address every point without asking questions.
-          claude_args: |
-            --max-turns 30
-            --allowedTools "Bash(npm ci),Bash(npm install),Bash(npm test),Bash(npm run typecheck),Bash(npm run lint),Bash(npm run build),Bash(npx nuxt prepare),Bash(git diff:*),Bash(git log:*)"
+          allowed_tools: |
+            Read
+            Grep
+            Glob
+            MultiGrep
+            Bash(git diff:*)
+            Bash(git log:*)
+            Bash(cat:*)
+            Bash(find:*)
+            Bash(ls:*)
+            Bash(head:*)
+            Bash(tail:*)
+            Bash(wc:*)
+          max_turns: "20"
