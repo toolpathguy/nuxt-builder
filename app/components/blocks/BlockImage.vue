@@ -3,7 +3,7 @@
     :src="src"
     :alt="alt"
     :class="['max-w-full', { 'rounded-lg': rounded }]"
-  />
+  >
 </template>
 
 <script setup lang="ts">

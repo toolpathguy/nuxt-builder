@@ -1,4 +1,5 @@
 <template>
+  <!-- eslint-disable-next-line vue/no-v-html -- trusted author-only content (Req 12.6) -->
   <div :class="['prose max-w-none', alignClass]" v-html="body" />
 </template>
 

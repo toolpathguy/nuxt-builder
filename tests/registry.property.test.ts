@@ -12,8 +12,6 @@ describe('Feature: 02-component-registry', () => {
   it('Property 1: Validator rejects invalid entries with identifying information', () => {
     // Generator for a valid base entry
     const validType = fc.stringMatching(/^[A-Z][a-zA-Z0-9]{0,9}$/)
-    const validLabel = fc.string({ minLength: 1, maxLength: 50 })
-    const validCategory = fc.constantFrom('layout' as const, 'content' as const, 'media' as const, 'form' as const)
 
     // Strategy: create entries that are almost valid but break one constraint at a time
     const invalidEntry = fc.oneof(
