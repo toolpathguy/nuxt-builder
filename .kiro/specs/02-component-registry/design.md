@@ -145,7 +145,9 @@ export function validateRegistry(registry: Record<string, unknown>): void {
   for (const [key, entry] of Object.entries(registry)) {
     const result = registryEntryZod.safeParse(entry)
     if (!result.success) {
-      const issues = result.error.issues.map(i => i.message).join('; ')
+      const issues = result.error.issues
+        .map(i => `${i.path.join('.') || '<root>'}: ${i.message}`)
+        .join('; ')
       throw new Error(`Registry validation failed for "${key}": ${issues}`)
     }
     // Verify type field matches key
@@ -383,7 +385,7 @@ The `componentMap` is a `Record<string, Component>` with exactly one entry per r
 
 ### Property 1: Validator rejects invalid entries with identifying information
 
-*For any* RegistryEntry object that violates one or more schema constraints (missing/empty label, invalid prop type, invalid category, allowedChildren with acceptsChildren:false, "default" slot with acceptsChildren:false, missing/empty type), the Zod validator SHALL throw an error whose message includes the entry's type or registry key, enabling identification of the malformed entry.
+*For any* RegistryEntry object that violates one or more schema constraints (missing/empty label, invalid prop type, invalid category, allowedChildren with acceptsChildren:false, "default" slot with acceptsChildren:false, missing/empty type), the Zod validator SHALL throw an error whose message includes the entry's type or registry key AND the path to the failing field (e.g., the prop key name for invalid props, "label" for missing labels), enabling precise identification of both the malformed entry and the specific field at fault.
 
 **Validates: Requirements 1.5, 2.2, 2.3, 2.4, 2.5, 2.8, 2.9**
 
