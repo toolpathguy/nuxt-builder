@@ -288,6 +288,11 @@ withDefaults(defineProps<{
   <div :class="['prose max-w-none', alignClass]" v-html="body" />
 </template>
 
+<!-- NOTE: v-html is intentional per Req 12.6. RichText body content is
+     trusted-author-only (set via the property panel by the page builder).
+     If RichText ever accepts external/user-submitted content, add
+     sanitization (e.g. DOMPurify) before binding. -->
+
 <script setup lang="ts">
 import { computed } from 'vue'
 
