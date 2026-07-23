@@ -459,7 +459,7 @@ All Zod validation is skipped via `import.meta.dev` guard. Registry entries are 
 ### Test Framework & Libraries
 
 - **Test runner**: Vitest (already configured via `vitest.config.ts`)
-- **Property-based testing**: fast-check (already in devDependencies)
+- **Property-based testing**: fast-check (must be added as a devDependency by this spec's tasks if not already present)
 - **Environment**: `node` for pure-data tests, `nuxt` for composable/component tests
 - **Test location**: `/tests/registry.property.test.ts` for property tests, `/tests/registry.test.ts` for example-based tests
 

@@ -120,6 +120,10 @@ Build the Component Registry — the single source of truth for all placeable bu
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 8. Write property-based tests
+  - [ ]* 8.0 Install fast-check as a devDependency if not already present
+    - Run `npm install -D fast-check`
+    - Verify it resolves in Vitest test files
+
   - [ ]* 8.1 Write property test: Validator rejects invalid entries with identifying information
     - **Property 1: Validator rejects invalid entries with identifying information**
     - Use fast-check to generate RegistryEntry objects that violate various constraints

@@ -32,7 +32,7 @@ The primary building blocks are **Nuxt UI page-building components** (`UPageHero
 2. THE Registry_Module SHALL export a `Registry` type defined as `Record<string, RegistryEntry>` from `/types/registry.ts`
 3. THE Registry_Module SHALL require the `type` field of each RegistryEntry to be a PascalCase string (matching the pattern `/^[A-Z][a-zA-Z0-9]*$/`) that is identical to its key in the Registry record
 4. THE Registry_Module SHALL import `PropSchema` from `/types/shared.ts` for the `props` field definition
-5. IF `acceptsChildren` is set to `false` on a RegistryEntry, THEN THE Registry_Module SHALL disallow the presence of the `allowedChildren` field on that entry
+5. IF `acceptsChildren` is set to `false` on a RegistryEntry, THEN THE Registry_Module SHALL enforce via runtime Zod validation (in development mode) that the `allowedChildren` field is not present on that entry — this is the same constraint as Requirement 2.5, expressed here for completeness of the type contract
 
 ### Requirement 2: Zod Validation of Registry Entries
 
@@ -229,7 +229,7 @@ The primary building blocks are **Nuxt UI page-building components** (`UPageHero
 3. WHEN the Entries_Module is imported from a plain Node.js or tsx script running outside Vite, THE Entries_Module SHALL load and evaluate without throwing errors within 2 seconds
 4. THE Registry_Module at `/registry/index.ts` SHALL import entries from the Entries_Module and Vue components from `/app/components/blocks/`, and SHALL export a `registry` object re-exporting all entries keyed by type string
 5. THE Registry_Module SHALL export a `componentMap` of type `Record<string, Component>` mapping each entry `type` to its Vue component, where every key in `componentMap` has a corresponding entry in the registry and every entry in the registry has a corresponding key in `componentMap`
-6. THE Registry_Module SHALL export helper functions: `getEntry(type: string)` returning `RegistryEntry | undefined`, `defaultPropsFor(type: string)` returning `Record<string, unknown>`, and `entriesByCategory()` returning `Record<string, RegistryEntry[]>`
+6. THE Registry_Module SHALL export helper functions: `getEntry(type: string)` returning `RegistryEntry | undefined`, `defaultPropsFor(type: string)` returning `Record<string, unknown> | undefined`, and `entriesByCategory()` returning `Record<string, RegistryEntry[]>`
 7. WHEN `defaultPropsFor` is called with a valid type, THE Registry_Module SHALL return an object with one key per entry in the entry's `props` record, each set to its PropSchema `default` value if defined, or `undefined` if the PropSchema declares no default
 8. IF `defaultPropsFor` or `getEntry` is called with a type string that does not match any registered entry, THEN THE Registry_Module SHALL return `undefined`
 9. WHEN `entriesByCategory` is called, THE Registry_Module SHALL return an object keyed by category string (from the set: `layout`, `content`, `media`, `form`) with each value being an array of all RegistryEntry objects belonging to that category
